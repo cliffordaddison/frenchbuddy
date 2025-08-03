@@ -26,13 +26,8 @@
     "tailwind-merge": "^2.0.0",
     "react-hook-form": "^7.47.0",
     "zustand": "^4.4.0",
-    "react-speech-recognition": "^3.10.0",
-    "react-speech-kit": "^2.0.0",
-    "react-audio-player": "^0.17.0",
     "react-hot-toast": "^2.4.0",
-    "date-fns": "^2.30.0",
-    "react-confetti": "^6.1.0",
-    "react-progress-bar-plus": "^1.0.0"
+    "date-fns": "^2.30.0"
   },
   "devDependencies": {
     "eslint": "^8.0.0",
