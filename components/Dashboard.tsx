@@ -31,7 +31,7 @@ export default function Dashboard() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   // Get unique categories
-  const categories = [...new Set(frenchLessons.map(lesson => lesson.category))];
+  const categories = Array.from(new Set(frenchLessons.map(lesson => lesson.category)));
 
   // Filter lessons based on selection
   const filteredLessons = frenchLessons.filter(lesson => {
