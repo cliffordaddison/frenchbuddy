@@ -145,20 +145,18 @@ export default function SettingsView({ onBack }: SettingsViewProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Current Level
+                  Learning Style
                 </label>
                 <select
-                  value={settings.level}
-                  onChange={(e) => handleSettingChange('level', e.target.value)}
+                  value="natural"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  disabled
                 >
-                  <option value="A1">A1 - Beginner</option>
-                  <option value="A2">A2 - Elementary</option>
-                  <option value="B1">B1 - Intermediate</option>
-                  <option value="B2">B2 - Upper Intermediate</option>
-                  <option value="C1">C1 - Advanced</option>
-                  <option value="C2">C2 - Mastery</option>
+                  <option value="natural">Natural Progression</option>
                 </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  Lessons adapt to your progress automatically
+                </p>
               </div>
               
               <div>
