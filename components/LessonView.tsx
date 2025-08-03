@@ -180,7 +180,7 @@ export default function LessonView({ onBack }: LessonViewProps) {
             <p className="text-gray-600">{lesson.category}</p>
             <div className="flex items-center gap-4 mt-2">
               <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                Level {lesson.level}
+                Difficulty {lesson.difficulty}
               </span>
               <span className="text-sm text-gray-500">
                 {currentPhraseIndex + 1} of {lesson.phrases.length}
