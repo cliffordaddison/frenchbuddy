@@ -1,15 +1,14 @@
 export interface Lesson {
   id: string;
   title: string;
+  category: string;
   level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
-  category: 'greetings' | 'basics' | 'conversation' | 'grammar' | 'vocabulary' | 'pronunciation' | 'culture';
-  difficulty: number; // 1-10
-  duration: number; // minutes
   phrases: Phrase[];
-  grammarPoints?: GrammarPoint[];
-  vocabulary?: VocabularyItem[];
-  exercises?: Exercise[];
+  grammarPoints: GrammarPoint[];
+  vocabulary: VocabularyItem[];
+  exercises: Exercise[];
   audioUrl?: string;
+  estimatedDuration: number; // in minutes
 }
 
 export interface Phrase {
@@ -17,9 +16,9 @@ export interface Phrase {
   french: string;
   english: string;
   pronunciation: string;
+  context: string;
+  usage: string;
   audioUrl?: string;
-  context?: string;
-  usage?: string[];
 }
 
 export interface GrammarPoint {
@@ -31,409 +30,327 @@ export interface GrammarPoint {
 }
 
 export interface VocabularyItem {
-  french: string;
-  english: string;
+  id: string;
+  word: string;
+  translation: string;
   partOfSpeech: string;
   example: string;
-  audioUrl?: string;
 }
 
 export interface Exercise {
   id: string;
-  type: 'translation' | 'pronunciation' | 'grammar' | 'listening' | 'speaking';
+  type: 'pronunciation' | 'translation' | 'listening' | 'speaking';
   question: string;
   correctAnswer: string;
   options?: string[];
   audioUrl?: string;
 }
 
+// Comprehensive French lessons based on NatuLang structure
 export const frenchLessons: Lesson[] = [
-  // A1 Level - Beginner
+  // BEGINNER LEVEL (A1-A2)
   {
-    id: 'a1-greetings',
-    title: 'Basic Greetings',
+    id: 'lesson-1',
+    title: 'Je comprends le français... un peu',
+    category: 'I speak French, a little',
     level: 'A1',
-    category: 'greetings',
-    difficulty: 1,
-    duration: 15,
+    estimatedDuration: 15,
     phrases: [
       {
-        id: 'bonjour',
-        french: 'Bonjour',
-        english: 'Hello / Good morning',
-        pronunciation: 'bohn-ZHOOR',
-        context: 'Used during the day until evening',
-        usage: ['Greeting someone in the morning', 'Formal greeting']
+        id: 'phrase-1-1',
+        french: 'Je comprends le français... un peu',
+        english: 'I understand French... a little',
+        pronunciation: 'zhuh kohm-prahn luh frahn-say... uhn puh',
+        context: 'When someone asks if you speak French',
+        usage: 'Use this when you want to indicate you have basic French knowledge'
       },
       {
-        id: 'salut',
-        french: 'Salut',
-        english: 'Hi / Hello',
-        pronunciation: 'sah-LOO',
-        context: 'Informal greeting',
-        usage: ['Greeting friends', 'Casual conversation']
+        id: 'phrase-1-2',
+        french: 'Comment allez-vous monsieur ?',
+        english: 'How are you sir?',
+        pronunciation: 'koh-mahn tah-lay voo muh-syuh',
+        context: 'Formal greeting',
+        usage: 'Use with people you don\'t know well or in formal situations'
       },
       {
-        id: 'au-revoir',
-        french: 'Au revoir',
-        english: 'Goodbye',
-        pronunciation: 'oh ruh-VWAHR',
-        context: 'Standard goodbye',
-        usage: ['Leaving a conversation', 'Ending a meeting']
-      },
-      {
-        id: 'merci',
-        french: 'Merci',
-        english: 'Thank you',
-        pronunciation: 'mehr-SEE',
-        context: 'Expressing gratitude',
-        usage: ['After receiving help', 'When someone does something for you']
-      },
-      {
-        id: 's-il-vous-plait',
-        french: "S'il vous plaît",
-        english: 'Please',
-        pronunciation: 'seel voo PLEH',
-        context: 'Polite request',
-        usage: ['Asking for something politely', 'Making requests']
+        id: 'phrase-1-3',
+        french: 'Qu\'est-ce que vous faites ?',
+        english: 'What do you do?',
+        pronunciation: 'kes kuh voo feht',
+        context: 'Asking about someone\'s profession',
+        usage: 'Formal way to ask about someone\'s job'
       }
     ],
     grammarPoints: [
       {
-        id: 'formal-vs-informal',
-        title: 'Formal vs Informal',
-        explanation: 'In French, you use different greetings depending on the formality of the situation.',
-        examples: ['Bonjour (formal) vs Salut (informal)', 'Au revoir (formal) vs Salut (informal)'],
-        rules: ['Use "vous" for formal situations', 'Use "tu" for informal situations']
-      }
-    ]
-  },
-  {
-    id: 'a1-introductions',
-    title: 'Introducing Yourself',
-    level: 'A1',
-    category: 'basics',
-    difficulty: 2,
-    duration: 20,
-    phrases: [
-      {
-        id: 'je-m-appelle',
-        french: 'Je m\'appelle [Name]',
-        english: 'My name is [Name]',
-        pronunciation: 'zhuh mah-PELL',
-        context: 'Introducing yourself',
-        usage: ['Meeting new people', 'Formal introductions']
-      },
-      {
-        id: 'comment-allez-vous',
-        french: 'Comment allez-vous ?',
-        english: 'How are you? (formal)',
-        pronunciation: 'koh-MAHN tah-lay VOO',
-        context: 'Asking about someone\'s well-being formally',
-        usage: ['Meeting someone for the first time', 'Professional settings']
-      },
-      {
-        id: 'comment-vas-tu',
-        french: 'Comment vas-tu ?',
-        english: 'How are you? (informal)',
-        pronunciation: 'koh-MAHN vah TOO',
-        context: 'Asking about someone\'s well-being informally',
-        usage: ['Talking to friends', 'Casual conversations']
-      },
-      {
-        id: 'tres-bien',
-        french: 'Très bien',
-        english: 'Very well',
-        pronunciation: 'treh bee-EN',
-        context: 'Responding positively to "How are you?"',
-        usage: ['When you\'re feeling good', 'Positive response']
-      },
-      {
-        id: 'enchanté',
-        french: 'Enchanté(e)',
-        english: 'Nice to meet you',
-        pronunciation: 'ahn-shahn-TAY',
-        context: 'After being introduced to someone',
-        usage: ['After meeting someone new', 'Polite response to introduction']
-      }
-    ],
-    grammarPoints: [
-      {
-        id: 'je-pronoun',
-        title: 'The Pronoun "Je"',
-        explanation: '"Je" means "I" in French and is used to talk about yourself.',
-        examples: ['Je m\'appelle Marie', 'Je suis étudiant'],
-        rules: ['Always capitalize "Je"', 'Use "Je" before verbs']
-      }
-    ]
-  },
-  {
-    id: 'a1-numbers',
-    title: 'Numbers 1-20',
-    level: 'A1',
-    category: 'basics',
-    difficulty: 2,
-    duration: 25,
-    phrases: [
-      {
-        id: 'un',
-        french: 'Un',
-        english: 'One',
-        pronunciation: 'uhn',
-        context: 'Counting or specifying quantity',
-        usage: ['Counting objects', 'Specifying quantity']
-      },
-      {
-        id: 'deux',
-        french: 'Deux',
-        english: 'Two',
-        pronunciation: 'duh',
-        context: 'Counting or specifying quantity',
-        usage: ['Counting objects', 'Specifying quantity']
-      },
-      {
-        id: 'trois',
-        french: 'Trois',
-        english: 'Three',
-        pronunciation: 'twah',
-        context: 'Counting or specifying quantity',
-        usage: ['Counting objects', 'Specifying quantity']
+        id: 'grammar-1-1',
+        title: 'Present Tense - Être (To Be)',
+        explanation: 'The verb "être" (to be) is one of the most important verbs in French',
+        examples: ['Je suis', 'Tu es', 'Il/Elle est', 'Nous sommes', 'Vous êtes', 'Ils/Elles sont'],
+        rules: ['Use "être" for identity, location, and characteristics', 'Irregular verb - must be memorized']
       }
     ],
     vocabulary: [
       {
-        french: 'zéro',
-        english: 'zero',
-        partOfSpeech: 'number',
-        example: 'Il y a zéro problème'
+        id: 'vocab-1-1',
+        word: 'comprendre',
+        translation: 'to understand',
+        partOfSpeech: 'verb',
+        example: 'Je comprends le français'
       },
       {
-        french: 'dix',
-        english: 'ten',
-        partOfSpeech: 'number',
-        example: 'J\'ai dix euros'
-      },
+        id: 'vocab-1-2',
+        word: 'un peu',
+        translation: 'a little',
+        partOfSpeech: 'adverb',
+        example: 'Je parle français un peu'
+      }
+    ],
+    exercises: [
       {
-        french: 'vingt',
-        english: 'twenty',
-        partOfSpeech: 'number',
-        example: 'J\'ai vingt ans'
+        id: 'exercise-1-1',
+        type: 'pronunciation',
+        question: 'Pronounce: "Je comprends le français"',
+        correctAnswer: 'zhuh kohm-prahn luh frahn-say',
+        audioUrl: '/audio/je-comprends.mp3'
       }
     ]
   },
-  
-  // A2 Level - Elementary
   {
-    id: 'a2-daily-routine',
-    title: 'Daily Routine',
-    level: 'A2',
-    category: 'conversation',
-    difficulty: 3,
-    duration: 30,
+    id: 'lesson-2',
+    title: 'Vous étudiez aujourd\'hui ?',
+    category: 'I speak French, a little',
+    level: 'A1',
+    estimatedDuration: 15,
     phrases: [
       {
-        id: 'je-me-leve',
-        french: 'Je me lève à sept heures',
-        english: 'I get up at seven o\'clock',
-        pronunciation: 'zhuh muh LEV ah set UHR',
-        context: 'Describing morning routine',
-        usage: ['Talking about your schedule', 'Describing daily activities']
+        id: 'phrase-2-1',
+        french: 'Vous étudiez aujourd\'hui ?',
+        english: 'Are you studying today?',
+        pronunciation: 'voo zay-tood-yay oh-zhoor-dwee',
+        context: 'Asking about someone\'s study plans',
+        usage: 'Use to ask if someone is studying or learning something'
       },
       {
-        id: 'je-vais-au-travail',
-        french: 'Je vais au travail',
-        english: 'I go to work',
-        pronunciation: 'zhuh vay oh trah-VAY',
-        context: 'Describing daily activities',
-        usage: ['Talking about work routine', 'Describing daily schedule']
+        id: 'phrase-2-2',
+        french: 'Je m\'appelle Pierre',
+        english: 'My name is Pierre',
+        pronunciation: 'zhuh mah-pell pee-air',
+        context: 'Introducing yourself',
+        usage: 'Formal way to say your name'
       },
       {
-        id: 'je-mange',
-        french: 'Je mange le petit déjeuner',
-        english: 'I eat breakfast',
-        pronunciation: 'zhuh MAHNZH luh puh-TEE day-zhuh-NAY',
-        context: 'Describing meals',
-        usage: ['Talking about eating habits', 'Describing daily routine']
+        id: 'phrase-2-3',
+        french: 'Je viens de France, mais je travaille ici',
+        english: 'I come from France, but I work here',
+        pronunciation: 'zhuh vee-ahn duh frahns, may zhuh trah-vay ee-see',
+        context: 'Explaining your background',
+        usage: 'Use to explain where you\'re from and what you do'
       }
     ],
     grammarPoints: [
       {
-        id: 'reflexive-verbs',
-        title: 'Reflexive Verbs',
-        explanation: 'Reflexive verbs are used when the subject and object are the same person.',
-        examples: ['Je me lève', 'Je me couche', 'Je me lave'],
-        rules: ['Use "me" before the verb', 'The verb agrees with the subject']
+        id: 'grammar-2-1',
+        title: 'Present Tense - Regular -ER Verbs',
+        explanation: 'Most French verbs ending in -er follow a regular pattern',
+        examples: ['étudier (to study)', 'travailler (to work)', 'parler (to speak)'],
+        rules: ['Remove -er ending and add: -e, -es, -e, -ons, -ez, -ent', 'Je étudie, Tu étudies, Il/Elle étudie']
+      }
+    ],
+    vocabulary: [
+      {
+        id: 'vocab-2-1',
+        word: 'étudier',
+        translation: 'to study',
+        partOfSpeech: 'verb',
+        example: 'Je étudie le français'
+      },
+      {
+        id: 'vocab-2-2',
+        word: 'aujourd\'hui',
+        translation: 'today',
+        partOfSpeech: 'adverb',
+        example: 'Je travaille aujourd\'hui'
+      }
+    ],
+    exercises: [
+      {
+        id: 'exercise-2-1',
+        type: 'translation',
+        question: 'Translate: "My name is Pierre"',
+        correctAnswer: 'Je m\'appelle Pierre',
+        options: ['Je m\'appelle Pierre', 'Mon nom est Pierre', 'Je suis Pierre', 'Pierre est mon nom']
       }
     ]
   },
-  
-  // B1 Level - Intermediate
+  // INTERMEDIATE LEVEL (B1-B2)
   {
-    id: 'b1-travel',
-    title: 'Travel and Transportation',
+    id: 'lesson-15',
+    title: 'Vous avez des projets pour aujourd\'hui ?',
+    category: 'Do you have plans?',
     level: 'B1',
-    category: 'conversation',
-    difficulty: 5,
-    duration: 35,
+    estimatedDuration: 20,
     phrases: [
       {
-        id: 'je-voudrais-reserver',
-        french: 'Je voudrais réserver une chambre',
-        english: 'I would like to book a room',
-        pronunciation: 'zhuh voo-DREH ray-zair-VAY oon SHAHMBR',
-        context: 'Making hotel reservations',
-        usage: ['Booking accommodation', 'Making travel arrangements']
+        id: 'phrase-15-1',
+        french: 'Vous avez des projets pour aujourd\'hui ?',
+        english: 'Do you have plans for today?',
+        pronunciation: 'voo zah-vay day proh-zhay poor oh-zhoor-dwee',
+        context: 'Making conversation about daily plans',
+        usage: 'Use to ask about someone\'s plans or schedule'
       },
       {
-        id: 'ou-est-la-gare',
-        french: 'Où est la gare ?',
-        english: 'Where is the train station?',
-        pronunciation: 'oo ay lah GAHR',
-        context: 'Asking for directions',
-        usage: ['Finding transportation', 'Getting directions']
+        id: 'phrase-15-2',
+        french: 'J\'ai besoin d\'apprendre le français',
+        english: 'I need to learn French',
+        pronunciation: 'zhay buh-zwahn dah-prahn-dr luh frahn-say',
+        context: 'Expressing a need or requirement',
+        usage: 'Use "avoir besoin de" to express necessity'
       },
       {
-        id: 'combien-coute',
-        french: 'Combien ça coûte ?',
-        english: 'How much does it cost?',
-        pronunciation: 'kohm-BEE-EN sah KOOT',
-        context: 'Asking about prices',
-        usage: ['Shopping', 'Inquiring about costs']
+        id: 'phrase-15-3',
+        french: 'Je veux un café avec du sucre',
+        english: 'I want a coffee with sugar',
+        pronunciation: 'zhuh vuh uhn kah-fay ah-vek dew sew-kr',
+        context: 'Ordering at a café',
+        usage: 'Use "vouloir" to express desire or want'
       }
     ],
     grammarPoints: [
       {
-        id: 'conditional-tense',
-        title: 'The Conditional Tense',
-        explanation: 'The conditional is used to express polite requests or hypothetical situations.',
-        examples: ['Je voudrais', 'J\'aimerais', 'Je pourrais'],
-        rules: ['Use the conditional for polite requests', 'Formed with the future stem + imperfect endings']
-      }
-    ]
-  },
-  
-  // B2 Level - Upper Intermediate
-  {
-    id: 'b2-business',
-    title: 'Business French',
-    level: 'B2',
-    category: 'conversation',
-    difficulty: 7,
-    duration: 40,
-    phrases: [
-      {
-        id: 'je-vous-presente',
-        french: 'Je vous présente notre équipe',
-        english: 'Let me introduce you to our team',
-        pronunciation: 'zhuh voo pray-ZAHNT noh-TR ay-KEEP',
-        context: 'Professional introductions',
-        usage: ['Business meetings', 'Introducing colleagues']
-      },
-      {
-        id: 'nous-avons-discute',
-        french: 'Nous avons discuté de ce projet',
-        english: 'We discussed this project',
-        pronunciation: 'noo zah-VOHN dee-skew-TAY duh suh proh-ZHAY',
-        context: 'Business discussions',
-        usage: ['Work meetings', 'Project updates']
+        id: 'grammar-15-1',
+        title: 'Avoir besoin de (To need)',
+        explanation: 'Use "avoir besoin de" to express necessity or need',
+        examples: ['J\'ai besoin de', 'Tu as besoin de', 'Il/Elle a besoin de'],
+        rules: ['Followed by infinitive or noun', 'Literally means "to have need of"']
       }
     ],
-    grammarPoints: [
+    vocabulary: [
       {
-        id: 'subjunctive',
-        title: 'The Subjunctive Mood',
-        explanation: 'The subjunctive is used to express doubt, possibility, or necessity.',
-        examples: ['Il faut que je parte', 'Je veux que vous veniez'],
-        rules: ['Used after certain expressions', 'Expresses subjectivity or doubt']
+        id: 'vocab-15-1',
+        word: 'projet',
+        translation: 'project/plan',
+        partOfSpeech: 'noun',
+        example: 'J\'ai un projet pour demain'
+      },
+      {
+        id: 'vocab-15-2',
+        word: 'besoin',
+        translation: 'need',
+        partOfSpeech: 'noun',
+        example: 'J\'ai besoin d\'aide'
+      }
+    ],
+    exercises: [
+      {
+        id: 'exercise-15-1',
+        type: 'speaking',
+        question: 'Say: "I need to learn French"',
+        correctAnswer: 'J\'ai besoin d\'apprendre le français',
+        audioUrl: '/audio/j-ai-besoin.mp3'
       }
     ]
   },
-  
-  // C1 Level - Advanced
+  // ADVANCED LEVEL (C1-C2)
   {
-    id: 'c1-literature',
-    title: 'French Literature and Culture',
+    id: 'lesson-100',
+    title: 'Arrêtez de mentir !',
+    category: 'Stop doing that!',
     level: 'C1',
-    category: 'culture',
-    difficulty: 8,
-    duration: 45,
+    estimatedDuration: 25,
     phrases: [
       {
-        id: 'cette-oeuvre',
-        french: 'Cette œuvre représente un tournant dans la littérature française',
-        english: 'This work represents a turning point in French literature',
-        pronunciation: 'set UH-vruh ray-pray-ZAHNT uhn toor-NAHN dahn lah lee-tay-rah-TEWR frahn-SEZ',
-        context: 'Academic discussion of literature',
-        usage: ['Literary analysis', 'Cultural discussions']
+        id: 'phrase-100-1',
+        french: 'Arrêtez de mentir !',
+        english: 'Stop lying!',
+        pronunciation: 'ah-reh-tay duh mahn-teer',
+        context: 'Expressing frustration or anger',
+        usage: 'Use "arrêter de" + infinitive to tell someone to stop doing something'
       },
       {
-        id: 'l-auteur-exprime',
-        french: 'L\'auteur exprime sa vision du monde à travers ses personnages',
-        english: 'The author expresses his vision of the world through his characters',
-        pronunciation: 'loh-TEUR eks-PREEM sah vee-ZYOHN dew MOHND ah trah-VERS say pair-soh-NAZH',
-        context: 'Literary analysis',
-        usage: ['Book discussions', 'Literary criticism']
+        id: 'phrase-100-2',
+        french: 'Va-t\'en !',
+        english: 'Go away!',
+        pronunciation: 'vah tahn',
+        context: 'Telling someone to leave',
+        usage: 'Informal and direct way to tell someone to leave'
+      },
+      {
+        id: 'phrase-100-3',
+        french: 'Je ne partirai pas sans mon argent',
+        english: 'I won\'t leave without my money',
+        pronunciation: 'zhuh nuh pahr-tee-ray pah sahn mohn ahr-zhahn',
+        context: 'Expressing determination',
+        usage: 'Use future tense to express certainty about future actions'
       }
     ],
     grammarPoints: [
       {
-        id: 'complex-sentences',
-        title: 'Complex Sentence Structures',
-        explanation: 'Advanced French uses complex sentence structures with multiple clauses.',
-        examples: ['Bien que je sois fatigué, je continue à travailler'],
-        rules: ['Use subjunctive in subordinate clauses', 'Maintain agreement throughout']
-      }
-    ]
-  },
-  
-  // C2 Level - Mastery
-  {
-    id: 'c2-philosophy',
-    title: 'Philosophy and Abstract Concepts',
-    level: 'C2',
-    category: 'culture',
-    difficulty: 10,
-    duration: 50,
-    phrases: [
-      {
-        id: 'la-nature',
-        french: 'La nature de l\'existence humaine suscite des interrogations profondes',
-        english: 'The nature of human existence raises profound questions',
-        pronunciation: 'lah nah-TEWR duh layg-zee-STAHNS ew-MEN soo-SEET day zehn-tehr-oh-gah-SYOHN proh-FOHND',
-        context: 'Philosophical discussion',
-        usage: ['Academic writing', 'Philosophical debates']
-      },
-      {
-        id: 'l-essence',
-        french: 'L\'essence même de la conscience reste un mystère',
-        english: 'The very essence of consciousness remains a mystery',
-        pronunciation: 'lay-SAHNS MEM duh lah kohn-SYAHNS rest uhn mees-TAIR',
-        context: 'Abstract philosophical discussion',
-        usage: ['Philosophical texts', 'Academic discourse']
+        id: 'grammar-100-1',
+        title: 'Future Tense',
+        explanation: 'Use future tense to express actions that will happen',
+        examples: ['Je partirai', 'Tu partiras', 'Il/Elle partira', 'Nous partirons', 'Vous partirez', 'Ils/Elles partiront'],
+        rules: ['Add endings to infinitive: -ai, -as, -a, -ons, -ez, -ont', 'For -er verbs, remove -e before adding endings']
       }
     ],
-    grammarPoints: [
+    vocabulary: [
       {
-        id: 'nuanced-expressions',
-        title: 'Nuanced Expressions',
-        explanation: 'C2 level French uses highly nuanced expressions and complex grammatical structures.',
-        examples: ['Il va sans dire que', 'Cela va de soi'],
-        rules: ['Mastery of all tenses and moods', 'Ability to express subtle nuances']
+        id: 'vocab-100-1',
+        word: 'mentir',
+        translation: 'to lie',
+        partOfSpeech: 'verb',
+        example: 'Il ne faut pas mentir'
+      },
+      {
+        id: 'vocab-100-2',
+        word: 'partir',
+        translation: 'to leave',
+        partOfSpeech: 'verb',
+        example: 'Je vais partir demain'
+      }
+    ],
+    exercises: [
+      {
+        id: 'exercise-100-1',
+        type: 'listening',
+        question: 'Listen and repeat: "Arrêtez de mentir !"',
+        correctAnswer: 'ah-reh-tay duh mahn-teer',
+        audioUrl: '/audio/arretez-de-mentir.mp3'
       }
     ]
   }
 ];
 
-export const getLessonsByLevel = (level: string): Lesson[] => {
+// Helper functions
+export function getLessonsByLevel(level: string): Lesson[] {
   return frenchLessons.filter(lesson => lesson.level === level);
-};
+}
 
-export const getLessonById = (id: string): Lesson | undefined => {
+export function getLessonById(id: string): Lesson | undefined {
   return frenchLessons.find(lesson => lesson.id === id);
-};
+}
 
-export const getRandomLesson = (level?: string): Lesson => {
-  const lessons = level ? getLessonsByLevel(level) : frenchLessons;
-  const randomIndex = Math.floor(Math.random() * lessons.length);
-  return lessons[randomIndex];
-}; 
+export function getRandomLesson(): Lesson {
+  const randomIndex = Math.floor(Math.random() * frenchLessons.length);
+  return frenchLessons[randomIndex];
+}
+
+export function getLessonsByCategory(category: string): Lesson[] {
+  return frenchLessons.filter(lesson => lesson.category === category);
+}
+
+export function getNextLesson(currentLessonId: string): Lesson | undefined {
+  const currentIndex = frenchLessons.findIndex(lesson => lesson.id === currentLessonId);
+  if (currentIndex === -1 || currentIndex === frenchLessons.length - 1) {
+    return undefined;
+  }
+  return frenchLessons[currentIndex + 1];
+}
+
+export function getPreviousLesson(currentLessonId: string): Lesson | undefined {
+  const currentIndex = frenchLessons.findIndex(lesson => lesson.id === currentLessonId);
+  if (currentIndex <= 0) {
+    return undefined;
+  }
+  return frenchLessons[currentIndex - 1];
+} 

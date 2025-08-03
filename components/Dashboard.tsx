@@ -1,300 +1,363 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { 
   BookOpen, 
   Mic, 
-  Headphones, 
-  Trophy, 
-  TrendingUp, 
-  Calendar,
-  Play,
-  Target,
-  Clock,
-  Star
+  BarChart3, 
+  Settings, 
+  Play, 
+  Target, 
+  Clock, 
+  Trophy,
+  Star,
+  TrendingUp,
+  Users,
+  Calendar
 } from 'lucide-react';
 import { useAppStore } from '@/lib/store/useAppStore';
-import { frenchLessons, getLessonsByLevel } from '@/lib/data/lessons';
+import { frenchLessons, getLessonsByLevel, getLessonsByCategory } from '@/lib/data/lessons';
 import toast from 'react-hot-toast';
 
 export default function Dashboard() {
   const { 
-    userProgress, 
     setCurrentView, 
-    startLesson,
-    setUserProgress 
+    setCurrentLessonId, 
+    userProgress, 
+    updateUserProgress 
   } = useAppStore();
-  
-  const [recommendedLessons, setRecommendedLessons] = useState<any[]>([]);
 
-  useEffect(() => {
-    // Get recommended lessons based on user's level and progress
-    const userLevel = userProgress.level;
-    const completedLessons = userProgress.completedLessons;
-    
-    const availableLessons = getLessonsByLevel(userLevel).filter(
-      lesson => !completedLessons.includes(lesson.id)
-    );
-    
-    setRecommendedLessons(availableLessons.slice(0, 3));
-  }, [userProgress]);
+  const [selectedLevel, setSelectedLevel] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
-  const handleStartLesson = (lesson: any) => {
-    startLesson(lesson);
-    toast.success(`Starting ${lesson.title}!`);
+  // Get unique categories and levels
+  const categories = [...new Set(frenchLessons.map(lesson => lesson.category))];
+  const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+  // Filter lessons based on selection
+  const filteredLessons = frenchLessons.filter(lesson => {
+    const levelMatch = selectedLevel === 'all' || lesson.level === selectedLevel;
+    const categoryMatch = selectedCategory === 'all' || lesson.category === selectedCategory;
+    return levelMatch && categoryMatch;
+  });
+
+  const handleStartLesson = (lessonId: string) => {
+    setCurrentLessonId(lessonId);
+    setCurrentView('lesson');
+    updateUserProgress({ lessonsStarted: 1 });
+    toast.success('Starting lesson...');
   };
 
-  const handleLevelChange = (newLevel: string) => {
-    setUserProgress({ level: newLevel as any });
-    toast.success(`Level changed to ${newLevel}`);
+  const getLevelColor = (level: string) => {
+    const colors = {
+      'A1': 'bg-green-100 text-green-800',
+      'A2': 'bg-blue-100 text-blue-800',
+      'B1': 'bg-yellow-100 text-yellow-800',
+      'B2': 'bg-orange-100 text-orange-800',
+      'C1': 'bg-red-100 text-red-800',
+      'C2': 'bg-purple-100 text-purple-800'
+    };
+    return colors[level as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
-  const getProgressPercentage = () => {
-    const totalLessons = frenchLessons.filter(l => l.level === userProgress.level).length;
-    const completedCount = userProgress.completedLessons.filter(
-      id => frenchLessons.find(l => l.id === id)?.level === userProgress.level
-    ).length;
-    return Math.round((completedCount / totalLessons) * 100);
-  };
-
-  const getAverageScore = () => {
-    const scores = [
-      userProgress.pronunciationScore,
-      userProgress.grammarScore,
-      userProgress.listeningScore,
-      userProgress.speakingScore
-    ];
-    return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+  const getCategoryIcon = (category: string) => {
+    const icons: { [key: string]: any } = {
+      'I speak French, a little': BookOpen,
+      'Do you have plans?': Calendar,
+      'Can you help me?': Users,
+      'Friends & family': Users,
+      'Asking for directions': Target,
+      'Daily stories': BookOpen,
+      'What are you doing?': Play,
+      'It was yesterday': Clock,
+      'It will be fun': Star,
+      'What were you doing?': Clock,
+      'I must do it!': Target,
+      'We\'ve been there': TrendingUp,
+      'Stop doing that!': Target,
+      'If I won the lottery': Trophy,
+      'I would have done it': Clock,
+      'I hope you have done that': Star,
+      'Daily stories II': BookOpen,
+      'Daily stories III': BookOpen,
+      'Daily stories IV': BookOpen,
+      'Daily stories V': BookOpen,
+      'Daily stories VI': BookOpen,
+      'Daily stories VII': BookOpen
+    };
+    return icons[category] || BookOpen;
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
+        <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
             🇫🇷 FrenchBuddy
           </h1>
-          <p className="text-lg text-gray-600">
+          <p className="text-gray-600 text-lg">
             Master French from A1 to C2 with interactive lessons
           </p>
-        </motion.div>
+        </div>
 
-        {/* User Stats */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8"
-        >
-          <div className="card">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Current Level</p>
-                <p className="text-2xl font-bold text-primary-600">{userProgress.level}</p>
-              </div>
-              <Target className="w-8 h-8 text-primary-500" />
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Study Streak</p>
-                <p className="text-2xl font-bold text-green-600">{userProgress.streak} days</p>
-              </div>
-              <TrendingUp className="w-8 h-8 text-green-500" />
-            </div>
-          </div>
-
-          <div className="card">
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-white rounded-xl shadow-lg p-6"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Study Time</p>
-                <p className="text-2xl font-bold text-blue-600">{userProgress.totalStudyTime}m</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {userProgress.totalStudyTime || 0}h
+                </p>
               </div>
-              <Clock className="w-8 h-8 text-blue-500" />
+              <div className="p-3 bg-blue-100 rounded-lg">
+                <Clock className="w-6 h-6 text-blue-600" />
+              </div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="card">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white rounded-xl shadow-lg p-6"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Lessons Completed</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {userProgress.lessonsCompleted || 0}
+                </p>
+              </div>
+              <div className="p-3 bg-green-100 rounded-lg">
+                <BookOpen className="w-6 h-6 text-green-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-xl shadow-lg p-6"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-600">Current Streak</p>
+                <p className="text-2xl font-bold text-gray-800">
+                  {userProgress.currentStreak || 0} days
+                </p>
+              </div>
+              <div className="p-3 bg-yellow-100 rounded-lg">
+                <TrendingUp className="w-6 h-6 text-yellow-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="bg-white rounded-xl shadow-lg p-6"
+          >
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Average Score</p>
-                <p className="text-2xl font-bold text-purple-600">{getAverageScore()}%</p>
-              </div>
-              <Star className="w-8 h-8 text-purple-500" />
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Progress Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="card mb-8"
-        >
-          <h2 className="text-xl font-semibold mb-4">Your Progress</h2>
-          <div className="mb-4">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-600">Level {userProgress.level} Progress</span>
-              <span className="text-sm font-medium">{getProgressPercentage()}%</span>
-            </div>
-            <div className="progress-bar">
-              <div 
-                className="progress-fill" 
-                style={{ width: `${getProgressPercentage()}%` }}
-              />
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <p className="text-sm text-gray-600">Pronunciation</p>
-              <p className="text-lg font-semibold text-french-600">{userProgress.pronunciationScore}%</p>
-            </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600">Grammar</p>
-              <p className="text-lg font-semibold text-blue-600">{userProgress.grammarScore}%</p>
-            </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600">Listening</p>
-              <p className="text-lg font-semibold text-green-600">{userProgress.listeningScore}%</p>
-            </div>
-            <div className="text-center">
-              <p className="text-sm text-gray-600">Speaking</p>
-              <p className="text-lg font-semibold text-purple-600">{userProgress.speakingScore}%</p>
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Level Selector */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="card mb-8"
-        >
-          <h2 className="text-xl font-semibold mb-4">Choose Your Level</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            {['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].map((level) => (
-              <button
-                key={level}
-                onClick={() => handleLevelChange(level)}
-                className={`p-3 rounded-lg border-2 transition-all duration-200 ${
-                  userProgress.level === level
-                    ? 'border-primary-500 bg-primary-50 text-primary-700'
-                    : 'border-gray-200 hover:border-primary-300 hover:bg-primary-50'
-                }`}
-              >
-                <div className="text-center">
-                  <div className="text-lg font-bold">{level}</div>
-                  <div className="text-xs text-gray-600">
-                    {level === 'A1' && 'Beginner'}
-                    {level === 'A2' && 'Elementary'}
-                    {level === 'B1' && 'Intermediate'}
-                    {level === 'B2' && 'Upper Intermediate'}
-                    {level === 'C1' && 'Advanced'}
-                    {level === 'C2' && 'Mastery'}
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Recommended Lessons */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="card mb-8"
-        >
-          <h2 className="text-xl font-semibold mb-4">Recommended for You</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {recommendedLessons.map((lesson, index) => (
-              <motion.div
-                key={lesson.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="lesson-card"
-                onClick={() => handleStartLesson(lesson)}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className={`level-badge level-${lesson.level.toLowerCase()}`}>
-                    {lesson.level}
-                  </span>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <Clock className="w-4 h-4 mr-1" />
-                    {lesson.duration}m
-                  </div>
-                </div>
-                <h3 className="text-lg font-semibold mb-2">{lesson.title}</h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  {lesson.phrases.length} phrases • Difficulty: {lesson.difficulty}/10
+                <p className="text-2xl font-bold text-gray-800">
+                  {userProgress.averageScore || 0}%
                 </p>
-                <button className="btn-primary w-full flex items-center justify-center">
-                  <Play className="w-4 h-4 mr-2" />
-                  Start Lesson
-                </button>
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+              </div>
+              <div className="p-3 bg-purple-100 rounded-lg">
+                <Trophy className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </motion.div>
+        </div>
 
         {/* Quick Actions */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          <button
-            onClick={() => setCurrentView('practice')}
-            className="card hover:shadow-xl transition-all duration-300 cursor-pointer group"
-          >
-            <div className="text-center">
-              <Mic className="w-12 h-12 text-primary-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-              <h3 className="text-lg font-semibold mb-2">Speaking Practice</h3>
-              <p className="text-sm text-gray-600">Improve your pronunciation</p>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setCurrentView('progress')}
-            className="card hover:shadow-xl transition-all duration-300 cursor-pointer group"
-          >
-            <div className="text-center">
-              <Trophy className="w-12 h-12 text-yellow-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-              <h3 className="text-lg font-semibold mb-2">Progress</h3>
-              <p className="text-sm text-gray-600">Track your learning journey</p>
-            </div>
-          </button>
-
-          <button
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setCurrentView('lesson')}
-            className="card hover:shadow-xl transition-all duration-300 cursor-pointer group"
+            className="flex items-center justify-center gap-3 p-4 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
           >
-            <div className="text-center">
-              <BookOpen className="w-12 h-12 text-green-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-              <h3 className="text-lg font-semibold mb-2">All Lessons</h3>
-              <p className="text-sm text-gray-600">Browse all available lessons</p>
-            </div>
-          </button>
+            <BookOpen size={24} />
+            <span className="font-semibold">Start Lesson</span>
+          </motion.button>
 
-          <button
-            onClick={() => setCurrentView('settings')}
-            className="card hover:shadow-xl transition-all duration-300 cursor-pointer group"
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setCurrentView('practice')}
+            className="flex items-center justify-center gap-3 p-4 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors"
           >
-            <div className="text-center">
-              <Calendar className="w-12 h-12 text-purple-500 mx-auto mb-3 group-hover:scale-110 transition-transform" />
-              <h3 className="text-lg font-semibold mb-2">Settings</h3>
-              <p className="text-sm text-gray-600">Customize your experience</p>
+            <Mic size={24} />
+            <span className="font-semibold">Practice Speaking</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setCurrentView('progress')}
+            className="flex items-center justify-center gap-3 p-4 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors"
+          >
+            <BarChart3 size={24} />
+            <span className="font-semibold">View Progress</span>
+          </motion.button>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setCurrentView('settings')}
+            className="flex items-center justify-center gap-3 p-4 bg-gray-600 text-white rounded-xl hover:bg-gray-700 transition-colors"
+          >
+            <Settings size={24} />
+            <span className="font-semibold">Settings</span>
+          </motion.button>
+        </div>
+
+        {/* Filters */}
+        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Filter Lessons</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Level Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                CEFR Level
+              </label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedLevel('all')}
+                  className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                    selectedLevel === 'all' 
+                      ? 'bg-blue-600 text-white' 
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  All Levels
+                </button>
+                {levels.map(level => (
+                  <button
+                    key={level}
+                    onClick={() => setSelectedLevel(level)}
+                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                      selectedLevel === level 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {level}
+                  </button>
+                ))}
+              </div>
             </div>
-          </button>
-        </motion.div>
+
+            {/* Category Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Category
+              </label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="all">All Categories</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Lessons Grid */}
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-semibold text-gray-800 mb-6">
+            Available Lessons ({filteredLessons.length})
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredLessons.map((lesson, index) => {
+              const CategoryIcon = getCategoryIcon(lesson.category);
+              
+              return (
+                <motion.div
+                  key={lesson.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200"
+                >
+                  <div className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-2 bg-blue-100 rounded-lg">
+                        <CategoryIcon className="w-6 h-6 text-blue-600" />
+                      </div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getLevelColor(lesson.level)}`}>
+                        {lesson.level}
+                      </span>
+                    </div>
+
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                      {lesson.title}
+                    </h3>
+                    
+                    <p className="text-sm text-gray-600 mb-4">
+                      {lesson.category}
+                    </p>
+
+                    <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                      <span className="flex items-center gap-1">
+                        <BookOpen size={16} />
+                        {lesson.phrases.length} phrases
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Clock size={16} />
+                        {lesson.estimatedDuration}m
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => handleStartLesson(lesson.id)}
+                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      <Play size={16} />
+                      Start Lesson
+                    </button>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {filteredLessons.length === 0 && (
+            <div className="text-center py-12">
+              <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500">No lessons match your current filters.</p>
+              <button
+                onClick={() => {
+                  setSelectedLevel('all');
+                  setSelectedCategory('all');
+                }}
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
