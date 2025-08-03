@@ -27,7 +27,6 @@ export default function SettingsView({ onBack }: SettingsViewProps) {
   const { userProgress, setUserProgress } = useAppStore();
   
   const [settings, setSettings] = useState({
-    level: userProgress.level,
     dailyGoal: 30, // minutes
     pronunciationSpeed: 0.8,
     autoPlay: true,
@@ -42,7 +41,7 @@ export default function SettingsView({ onBack }: SettingsViewProps) {
   };
 
   const handleSaveSettings = () => {
-    setUserProgress({ level: settings.level });
+    // Settings are stored locally, no need to update userProgress
     toast.success('Settings saved successfully!');
   };
 
@@ -86,7 +85,6 @@ export default function SettingsView({ onBack }: SettingsViewProps) {
   const handleResetProgress = () => {
     if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
       setUserProgress({
-        level: 'A1',
         completedLessons: [],
         streak: 0,
         totalStudyTime: 0,
@@ -95,6 +93,11 @@ export default function SettingsView({ onBack }: SettingsViewProps) {
         grammarScore: 0,
         listeningScore: 0,
         speakingScore: 0,
+        lessonsCompleted: 0,
+        phrasesMastered: 0,
+        currentStreak: 0,
+        averageScore: 0,
+        lessonsStarted: 0,
       });
       toast.success('Progress reset successfully!');
     }
