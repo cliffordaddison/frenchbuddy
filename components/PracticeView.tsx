@@ -75,7 +75,7 @@ export default function PracticeView({ onBack }: PracticeViewProps) {
   }, []);
 
   const loadNewPhrase = () => {
-    const lesson = getRandomLesson(userProgress.level);
+    const lesson = getRandomLesson();
     const randomPhrase = lesson.phrases[Math.floor(Math.random() * lesson.phrases.length)];
     setCurrentPhrase(randomPhrase);
     setTranscript('');
