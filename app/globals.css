@@ -1,0 +1,83 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  font-family: 'Inter', sans-serif;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-lg p-6 border border-gray-100;
+  }
+  
+  .lesson-card {
+    @apply bg-gradient-to-br from-primary-50 to-primary-100 border border-primary-200 rounded-xl p-6 hover:shadow-lg transition-all duration-300 cursor-pointer;
+  }
+  
+  .progress-bar {
+    @apply w-full bg-gray-200 rounded-full h-2;
+  }
+  
+  .progress-fill {
+    @apply bg-primary-600 h-2 rounded-full transition-all duration-300;
+  }
+  
+  .french-text {
+    @apply text-lg font-medium text-gray-800;
+  }
+  
+  .english-text {
+    @apply text-sm text-gray-600 italic;
+  }
+  
+  .pronunciation-btn {
+    @apply bg-french-500 hover:bg-french-600 text-white rounded-full p-3 transition-colors duration-200;
+  }
+  
+  .speech-btn {
+    @apply bg-primary-500 hover:bg-primary-600 text-white rounded-full p-4 transition-all duration-200 hover:scale-105;
+  }
+  
+  .level-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .level-a1 { @apply bg-green-100 text-green-800; }
+  .level-a2 { @apply bg-blue-100 text-blue-800; }
+  .level-b1 { @apply bg-yellow-100 text-yellow-800; }
+  .level-b2 { @apply bg-orange-100 text-orange-800; }
+  .level-c1 { @apply bg-red-100 text-red-800; }
+  .level-c2 { @apply bg-purple-100 text-purple-800; }
+} 
