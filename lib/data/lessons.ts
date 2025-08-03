@@ -2,7 +2,7 @@ export interface Lesson {
   id: string;
   title: string;
   category: string;
-  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+  difficulty: number; // 1-10 scale for natural progression
   phrases: Phrase[];
   grammarPoints: GrammarPoint[];
   vocabulary: VocabularyItem[];
@@ -46,14 +46,14 @@ export interface Exercise {
   audioUrl?: string;
 }
 
-// Comprehensive French lessons based on NatuLang structure
+// Natural progression French lessons based on NatuLang structure
 export const frenchLessons: Lesson[] = [
-  // BEGINNER LEVEL (A1-A2)
+  // BEGINNER - Basic Conversations
   {
     id: 'lesson-1',
     title: 'Je comprends le français... un peu',
     category: 'I speak French, a little',
-    level: 'A1',
+    difficulty: 1,
     estimatedDuration: 15,
     phrases: [
       {
@@ -120,7 +120,7 @@ export const frenchLessons: Lesson[] = [
     id: 'lesson-2',
     title: 'Vous étudiez aujourd\'hui ?',
     category: 'I speak French, a little',
-    level: 'A1',
+    difficulty: 2,
     estimatedDuration: 15,
     phrases: [
       {
@@ -183,12 +183,12 @@ export const frenchLessons: Lesson[] = [
       }
     ]
   },
-  // INTERMEDIATE LEVEL (B1-B2)
+  // INTERMEDIATE - Daily Conversations
   {
     id: 'lesson-15',
     title: 'Vous avez des projets pour aujourd\'hui ?',
     category: 'Do you have plans?',
-    level: 'B1',
+    difficulty: 4,
     estimatedDuration: 20,
     phrases: [
       {
@@ -251,12 +251,12 @@ export const frenchLessons: Lesson[] = [
       }
     ]
   },
-  // ADVANCED LEVEL (C1-C2)
+  // ADVANCED - Complex Expressions
   {
     id: 'lesson-100',
     title: 'Arrêtez de mentir !',
     category: 'Stop doing that!',
-    level: 'C1',
+    difficulty: 8,
     estimatedDuration: 25,
     phrases: [
       {
@@ -322,8 +322,10 @@ export const frenchLessons: Lesson[] = [
 ];
 
 // Helper functions
-export function getLessonsByLevel(level: string): Lesson[] {
-  return frenchLessons.filter(lesson => lesson.level === level);
+export function getLessonsByDifficulty(minDifficulty: number, maxDifficulty: number): Lesson[] {
+  return frenchLessons.filter(lesson => 
+    lesson.difficulty >= minDifficulty && lesson.difficulty <= maxDifficulty
+  );
 }
 
 export function getLessonById(id: string): Lesson | undefined {
@@ -353,4 +355,16 @@ export function getPreviousLesson(currentLessonId: string): Lesson | undefined {
     return undefined;
   }
   return frenchLessons[currentIndex - 1];
+}
+
+export function getRecommendedLessons(userProgress: any): Lesson[] {
+  // Simple recommendation based on completed lessons
+  const completedCount = userProgress.completedLessons?.length || 0;
+  const difficulty = Math.min(Math.floor(completedCount / 3) + 1, 10);
+  
+  return frenchLessons
+    .filter(lesson => !userProgress.completedLessons?.includes(lesson.id))
+    .filter(lesson => lesson.difficulty <= difficulty + 2)
+    .sort((a, b) => a.difficulty - b.difficulty)
+    .slice(0, 5);
 } 

@@ -3,9 +3,8 @@ import { persist } from 'zustand/middleware';
 import { Lesson, Phrase } from '../data/lessons';
 
 export interface UserProgress {
-  level: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
   completedLessons: string[];
-  currentLesson?: string;
+  currentLessonId?: string;
   streak: number;
   totalStudyTime: number; // in minutes
   lastStudyDate?: string;
@@ -14,6 +13,11 @@ export interface UserProgress {
   grammarScore: number; // 0-100
   listeningScore: number; // 0-100
   speakingScore: number; // 0-100
+  lessonsCompleted: number;
+  phrasesMastered: number;
+  currentStreak: number;
+  averageScore: number;
+  lessonsStarted: number;
 }
 
 export interface StudySession {
@@ -38,6 +42,7 @@ interface AppState {
   error?: string;
   
   // Learning state
+  currentLessonId?: string;
   currentLesson?: Lesson;
   currentPhraseIndex: number;
   isPlayingAudio: boolean;
@@ -47,6 +52,8 @@ interface AppState {
   
   // Actions
   setUserProgress: (progress: Partial<UserProgress>) => void;
+  updateUserProgress: (progress: Partial<UserProgress>) => void;
+  setCurrentLessonId: (lessonId: string) => void;
   startLesson: (lesson: Lesson) => void;
   completeLesson: (lessonId: string, score: number) => void;
   nextPhrase: () => void;
@@ -66,7 +73,6 @@ interface AppState {
 }
 
 const initialUserProgress: UserProgress = {
-  level: 'A1',
   completedLessons: [],
   streak: 0,
   totalStudyTime: 0,
@@ -75,6 +81,11 @@ const initialUserProgress: UserProgress = {
   grammarScore: 0,
   listeningScore: 0,
   speakingScore: 0,
+  lessonsCompleted: 0,
+  phrasesMastered: 0,
+  currentStreak: 0,
+  averageScore: 0,
+  lessonsStarted: 0,
 };
 
 export const useAppStore = create<AppState>()(
@@ -97,9 +108,18 @@ export const useAppStore = create<AppState>()(
           userProgress: { ...state.userProgress, ...progress },
         })),
 
+      updateUserProgress: (progress) =>
+        set((state) => ({
+          userProgress: { ...state.userProgress, ...progress },
+        })),
+
+      setCurrentLessonId: (lessonId) =>
+        set({ currentLessonId: lessonId }),
+
       startLesson: (lesson) =>
         set({
           currentLesson: lesson,
+          currentLessonId: lesson.id,
           currentPhraseIndex: 0,
           currentView: 'lesson',
           isLoading: false,
@@ -125,6 +145,7 @@ export const useAppStore = create<AppState>()(
               ...state.userProgress,
               completedLessons,
               lastStudyDate: new Date().toISOString(),
+              lessonsCompleted: state.userProgress.lessonsCompleted + 1,
               ...scoreUpdate,
             },
           };
@@ -167,6 +188,7 @@ export const useAppStore = create<AppState>()(
       resetSession: () =>
         set({
           currentLesson: undefined,
+          currentLessonId: undefined,
           currentPhraseIndex: 0,
           isPlayingAudio: false,
           isRecording: false,
@@ -193,6 +215,7 @@ export const useAppStore = create<AppState>()(
             userProgress: {
               ...state.userProgress,
               vocabularyMastered,
+              phrasesMastered: state.userProgress.phrasesMastered + 1,
             },
           };
         }),
