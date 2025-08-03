@@ -31,15 +31,24 @@ export default function ProgressView({ onBack }: ProgressViewProps) {
   const { userProgress } = useAppStore();
   const [activeTab, setActiveTab] = useState<'overview' | 'skills' | 'achievements' | 'vocabulary'>('overview');
 
-  const getProgressByLevel = () => {
-    const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-    return levels.map(level => {
-      const totalLessons = frenchLessons.filter(l => l.level === level).length;
+  const getProgressByDifficulty = () => {
+    const difficultyRanges = [
+      { name: 'Beginner', min: 1, max: 3 },
+      { name: 'Elementary', min: 4, max: 5 },
+      { name: 'Intermediate', min: 6, max: 7 },
+      { name: 'Advanced', min: 8, max: 10 }
+    ];
+    
+    return difficultyRanges.map(range => {
+      const totalLessons = frenchLessons.filter(l => l.difficulty >= range.min && l.difficulty <= range.max).length;
       const completedLessons = userProgress.completedLessons.filter(
-        id => frenchLessons.find(l => l.id === id)?.level === level
+        id => {
+          const lesson = frenchLessons.find(l => l.id === id);
+          return lesson && lesson.difficulty >= range.min && lesson.difficulty <= range.max;
+        }
       ).length;
       return {
-        level,
+        level: range.name,
         completed: completedLessons,
         total: totalLessons,
         percentage: totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0
@@ -211,7 +220,7 @@ export default function ProgressView({ onBack }: ProgressViewProps) {
                 <div className="card">
                   <h2 className="text-xl font-semibold mb-6">Progress by Level</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {getProgressByLevel().map((level) => (
+                    {getProgressByDifficulty().map((level) => (
                       <div key={level.level} className="space-y-3">
                         <div className="flex justify-between items-center">
                           <span className="font-medium">{level.level}</span>
